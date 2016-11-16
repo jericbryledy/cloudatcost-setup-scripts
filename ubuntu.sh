@@ -50,8 +50,12 @@ if [ ! -f .kernel_remove_ready ]; then
 	echo "basic information"
 	echo "=========================================="
 	echo
-	echo "machine name:"
+	echo "machine name [ubuntu]:"
 	read machine_name
+
+	if [[ -z "${machine_name// }" ]]; then
+		machine_name=ubuntu
+	fi
 
 	sed -i s/ubuntu/$machine_name/ /etc/hosts
 	sed -i s/ubuntu/$machine_name/ /etc/hostname
@@ -93,7 +97,7 @@ fi
 
 
 
-if [ ! -f .release_upgrade_done]; then
+if [ ! -f .release_upgrade_done ]; then
 
 	cleanup_old_kernels
 
@@ -148,17 +152,17 @@ echo
 echo "disabling root login..."
 sed -i "s/PermitRootLogin yes/PermitRootLogin no/" /etc/ssh/sshd_config
 
-echo "change ssh port? [22]"
+echo "new ssh port [22]:"
 read ssh_port
 
 if [[ -z "${ssh_port// }" ]]; then
 	ssh_port=22
 fi
 
-echo "restarting ssh..."
 sed -i "s/Port 22/Port $ssh_port/" /etc/ssh/sshd_config
 
 
+echo "restarting ssh..."
 service ssh restart
 
 echo
