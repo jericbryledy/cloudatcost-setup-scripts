@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ $EUID != 0 ]; then
+	sudo "$0" "$@"
+	exit $?
+fi
+
+
+
 upgrade_machine() {
 	apt-get update
 	apt-get upgrade -y
@@ -39,10 +46,24 @@ cleanup_old_kernels() {
 
 }
 
-if [ $EUID != 0 ]; then
-	sudo "$0" "$@"
-	exit $?
-fi
+regenerate_ssh_server_keys() {
+	mapfile -t ssh_key_types < <(ls -l /etc/ssh | grep .pub | awk '{print $9}' | sed -r 's/ssh_host_([a-zA-Z0-9]+)_key.pub/\1/')
+
+	echo "new ssh server keys:"
+
+	for ssh_key_type in "${ssh_key_types[@]}"
+	do
+		    rm /etc/ssh/ssh_host_"$ssh_key_type"_key
+		    rm /etc/ssh/ssh_host_"$ssh_key_type"_key.pub
+
+		    ssh-keygen -q -N "" -t $ssh_key_type -f  /etc/ssh/ssh_host_"$ssh_key_type"_key
+
+		    echo
+		    echo $ssh_key_type | awk '{print toupper($1)}'
+		    ssh-keygen -E sha256 -lf /etc/ssh/ssh_host_"$ssh_key_type"_key
+		    ssh-keygen -E md5 -lf /etc/ssh/ssh_host_"$ssh_key_type"_key
+	done
+}
 
 if [ ! -f .kernel_remove_ready ]; then
 
@@ -161,6 +182,9 @@ fi
 
 sed -i "s/Port 22/Port $ssh_port/" /etc/ssh/sshd_config
 
+
+echo "creating new ssh server keys..."
+regenerate_ssh_server_keys
 
 echo "restarting ssh..."
 service ssh restart
