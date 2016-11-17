@@ -21,6 +21,7 @@ chmod u+x ubuntu.sh
 1. Updates all packages to the latest version
 1. Disables `root` ssh access
 1. Changes ssh port number (most script kiddies attack the default port 22)
+1. Regenerates new SSH Server keys
 1. Deletes old kernels
 
 
