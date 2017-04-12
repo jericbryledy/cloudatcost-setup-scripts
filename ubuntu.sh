@@ -53,15 +53,15 @@ regenerate_ssh_server_keys() {
 
 	for ssh_key_type in "${ssh_key_types[@]}"
 	do
-		    rm /etc/ssh/ssh_host_"$ssh_key_type"_key
-		    rm /etc/ssh/ssh_host_"$ssh_key_type"_key.pub
+		rm /etc/ssh/ssh_host_"$ssh_key_type"_key
+		rm /etc/ssh/ssh_host_"$ssh_key_type"_key.pub
 
-		    ssh-keygen -q -N "" -t $ssh_key_type -f  /etc/ssh/ssh_host_"$ssh_key_type"_key
+		ssh-keygen -q -N "" -t $ssh_key_type -f  /etc/ssh/ssh_host_"$ssh_key_type"_key
 
-		    echo
-		    echo $ssh_key_type | awk '{print toupper($1)}'
-		    ssh-keygen -E sha256 -lf /etc/ssh/ssh_host_"$ssh_key_type"_key
-		    ssh-keygen -E md5 -lf /etc/ssh/ssh_host_"$ssh_key_type"_key
+		echo
+		echo $ssh_key_type | awk '{print toupper($1)}'
+		ssh-keygen -E sha256 -lf /etc/ssh/ssh_host_"$ssh_key_type"_key
+		ssh-keygen -E md5 -lf /etc/ssh/ssh_host_"$ssh_key_type"_key
 	done
 }
 
