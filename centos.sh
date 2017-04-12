@@ -45,10 +45,10 @@ regenerate_ssh_server_keys() {
 		rm /etc/ssh/ssh_host_"$ssh_key_type"_key.pub
 
 		ssh-keygen -q -N "" -t $ssh_key_type -f  /etc/ssh/ssh_host_"$ssh_key_type"_key
-		awk '{print $2}' ssh_host_"$ssh_key_type"_key.pub | base64 -d | sha256sum -b | awk '{print $1}' | xxd -r -p | base64
 
 		echo
 		echo $ssh_key_type | awk '{print toupper($1)}'
+		awk '{print $2}' /etc/ssh/ssh_host_"$ssh_key_type"_key.pub | base64 -d | sha256sum -b | awk '{print $1}' | xxd -r -p | base64
 		ssh-keygen -lf /etc/ssh/ssh_host_"$ssh_key_type"_key
 	done
 }
